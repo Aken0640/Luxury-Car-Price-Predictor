@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxury Car Price Predictor</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<section class="hero">
+    <div class="overlay"></div>
+    <div class="hero-content">
+        <h1>Car Price Predictor</h1>
+        <p>Scroll Down To Predict Real-Time Car Prices</p>
+        <div class="scroll-down">↓</div>
+    </div>
+</section>
+
+<section class="predict-section">
+    <div class="glass-card">
+
+        <h2>Predict Car Price</h2>
+
+        <!-- Year -->
+        <div class="input-group">
+            <label>Year</label>
+            <input type="range" id="year" min="2000" max="2023" value="2015">
+            <div class="value" id="yearValue">2015</div>
+        </div>
+
+        <!-- Engine Size -->
+        <div class="input-group">
+            <label>Engine Size (L)</label>
+            <input type="range" id="engine" min="1" max="5" step="0.1" value="2">
+            <div class="value" id="engineValue">2.0</div>
+        </div>
+
+        <!-- Mileage -->
+        <div class="input-group">
+            <label>Total Distance Driven (km)</label>
+            <input type="range" id="mileage" min="0" max="300000" step="1000" value="80000">
+            <div class="value" id="mileageValue">80,000</div>
+        </div>
+
+        <!-- Owner Count -->
+        <div class="input-group">
+            <label>Number of Previous Owners</label>
+            <input type="range" id="ownerCount" min="1" max="5" step="1" value="1">
+            <div class="value" id="ownerCountValue">1</div>
+        </div>
+
+        <!-- Brand -->
+        <div class="input-group">
+            <label>Brand</label>
+            <select id="brand">
+                <option value="Audi">Audi</option>
+                <option value="BMW">BMW</option>
+                <option value="Chevrolet">Chevrolet</option>
+                <option value="Ford">Ford</option>
+                <option value="Honda">Honda</option>
+                <option value="Hyundai">Hyundai</option>
+                <option value="Kia">Kia</option>
+                <option value="Mercedes">Mercedes</option>
+                <option value="Toyota">Toyota</option>
+                <option value="Volkswagen">Volkswagen</option>
+            </select>
+        </div>
+
+        <!-- Model (dynamic, based on brand) -->
+        <div class="input-group">
+            <label>Model</label>
+            <select id="model"></select>
+        </div>
+
+        <!-- Fuel Type -->
+        <div class="input-group">
+            <label>Fuel Type</label>
+            <select id="fuelType">
+                <option value="Petrol">Petrol</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Hybrid">Hybrid</option>
+                <option value="Electric">Electric</option>
+            </select>
+        </div>
+
+        <!-- Transmission -->
+        <div class="input-group">
+            <label>Transmission</label>
+            <select id="transmission">
+                <option value="Automatic">Automatic</option>
+                <option value="Manual">Manual</option>
+                <option value="Semi-Automatic">Semi-Automatic</option>
+            </select>
+        </div>
+
+        <div class="price-box">
+            <h3>Estimated Price</h3>
+            <div id="result">$ 0</div>
+        </div>
+
+    </div>
+</section>
+
+<script>
+const brandModels = {
+    "Audi":       ["A3", "A4", "Q5"],
+    "BMW":        ["3 Series", "5 Series", "X5"],
+    "Chevrolet":  ["Equinox", "Impala", "Malibu"],
+    "Ford":       ["Explorer", "Fiesta", "Focus"],
+    "Honda":      ["Accord", "CR-V", "Civic"],
+    "Hyundai":    ["Elantra", "Sonata", "Tucson"],
+    "Kia":        ["Optima", "Rio", "Sportage"],
+    "Mercedes":   ["C-Class", "E-Class", "GLA"],
+    "Toyota":     ["Camry", "Corolla", "RAV4"],
+    "Volkswagen": ["Golf", "Passat", "Tiguan"]
+}
+
+function populateModels() {
+    const brand = document.getElementById("brand").value
+    const modelSelect = document.getElementById("model")
+    modelSelect.innerHTML = ""
+    brandModels[brand].forEach(m => {
+        const opt = document.createElement("option")
+        opt.value = m
+        opt.textContent = m
+        modelSelect.appendChild(opt)
+    })
+}
+
+// Init model dropdown
+populateModels()
+
+// Event listeners
+document.getElementById("year").addEventListener("input", updatePrediction)
+document.getElementById("engine").addEventListener("input", updatePrediction)
+document.getElementById("mileage").addEventListener("input", updatePrediction)
+document.getElementById("ownerCount").addEventListener("input", updatePrediction)
+document.getElementById("brand").addEventListener("change", () => { populateModels(); updatePrediction() })
+document.getElementById("model").addEventListener("change", updatePrediction)
+document.getElementById("fuelType").addEventListener("change", updatePrediction)
+document.getElementById("transmission").addEventListener("change", updatePrediction)
+
+async function updatePrediction() {
+    const year = document.getElementById("year")
+    const engine = document.getElementById("engine")
+    const mileage = document.getElementById("mileage")
+    const ownerCount = document.getElementById("ownerCount")
+
+    document.getElementById("yearValue").innerText = year.value
+    document.getElementById("engineValue").innerText = parseFloat(engine.value).toFixed(1)
+    document.getElementById("mileageValue").innerText = Number(mileage.value).toLocaleString()
+    document.getElementById("ownerCountValue").innerText = ownerCount.value
+
+    const data = {
+        Year:         parseInt(year.value),
+        Engine_Size:  parseFloat(engine.value),
+        Mileage:      parseInt(mileage.value),
+        Doors:        4,
+        Owner_Count:  parseInt(ownerCount.value),
+        Brand:        document.getElementById("brand").value,
+        Model:        document.getElementById("model").value,
+        Fuel_Type:    document.getElementById("fuelType").value,
+        Transmission: document.getElementById("transmission").value
+    }
+
+    try {
+        const response = await fetch("/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        })
+
+        if (!response.ok) throw new Error("Prediction failed")
+
+        const result = await response.json()
+        document.getElementById("result").innerHTML =
+            "$ " + Number(result.prediction).toLocaleString()
+    }
+    catch (error) {
+        console.error(error)
+        document.getElementById("result").innerHTML = "Server Error"
+    }
+}
+
+updatePrediction()
+</script>
+
+</body>
+</html>
