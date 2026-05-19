@@ -16,6 +16,15 @@
     <div class="hero-content">
         <h1>Car Price Predictor</h1>
         <p>Scroll Down To Predict Real-Time Car Prices</p>
+        <div class="theme-switch">
+            <input type="checkbox" id="themeToggle">
+            <label for="themeToggle" class="toggle-label">
+            <span class="sun">☀️</span>
+            <span class="moon">🌙</span>
+            <div class="toggle-ball"></div>
+
+        </label>
+    </div>
         <div class="scroll-down">↓</div>
     </div>
 </section>
@@ -24,6 +33,11 @@
     <div class="glass-card">
 
         <h2>Predict Car Price</h2>
+        <div class="car-preview">
+            <img id="carImage"
+                src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1200&auto=format&fit=crop"
+                alt="Car Image">
+        </div>
 
         <!-- Year -->
         <div class="input-group">
@@ -118,7 +132,48 @@ const brandModels = {
     "Toyota":     ["Camry", "Corolla", "RAV4"],
     "Volkswagen": ["Golf", "Passat", "Tiguan"]
 }
+const carImages = {
 
+    "Audi_A3": "/static/images/audi_a3.jpg",
+    "Audi_A4": "/static/images/audi_a4.jpg",
+    "Audi_Q5": "/static/images/audi_q5.jpg",
+
+    "BMW_3 Series": "/static/images/bmw_3_series.jpg",
+    "BMW_5 Series": "/static/images/bmw_5_series.jpg",
+    "BMW_X5": "/static/images/bmw_x5.jpg",
+
+    "Chevrolet_Equinox": "/static/images/chevrolet_equinox.jpg",
+    "Chevrolet_Impala": "/static/images/chevrolet_impala.jpg",
+    "Chevrolet_Malibu": "/static/images/chevrolet_malibu.jpg",
+
+    "Ford_Explorer": "/static/images/ford_explorer.jpg",
+    "Ford_Fiesta": "/static/images/ford_fiesta.jpg",
+    "Ford_Focus": "/static/images/ford_focus.jpg",
+
+    "Honda_Accord": "/static/images/honda_accord.jpg",
+    "Honda_CR-V": "/static/images/honda_crv.jpg",
+    "Honda_Civic": "/static/images/honda_civic.jpg",
+
+    "Hyundai_Elantra": "/static/images/hyundai_elantra.jpg",
+    "Hyundai_Sonata": "/static/images/hyundai_sonata.jpg",
+    "Hyundai_Tucson": "/static/images/hyundai_tucson.jpg",
+
+    "Kia_Optima": "/static/images/kia_optima.jpg",
+    "Kia_Rio": "/static/images/kia_rio.jpg",
+    "Kia_Sportage": "/static/images/kia_sportage.jpg",
+
+    "Mercedes_C-Class": "/static/images/mercedes_c_class.jpg",
+    "Mercedes_E-Class": "/static/images/mercedes_e_class.jpg",
+    "Mercedes_GLA": "/static/images/mercedes_gla.jpg",
+
+    "Toyota_Camry": "/static/images/toyota_camry.jpg",
+    "Toyota_Corolla": "/static/images/toyota_corolla.jpg",
+    "Toyota_RAV4": "/static/images/toyota_rav4.jpg",
+
+    "Volkswagen_Golf": "/static/images/volkswagen_golf.jpg",
+    "Volkswagen_Passat": "/static/images/volkswagen_passat.jpg",
+    "Volkswagen_Tiguan": "/static/images/volkswagen_tiguan.jpg"
+}
 function populateModels() {
     const brand = document.getElementById("brand").value
     const modelSelect = document.getElementById("model")
@@ -130,6 +185,28 @@ function populateModels() {
         modelSelect.appendChild(opt)
     })
 }
+function updateCarImage(){
+
+    const brand = document.getElementById("brand").value
+
+    const model = document.getElementById("model").value
+
+    const key = `${brand}_${model}`
+
+    const image = document.getElementById("carImage")
+
+    image.style.opacity = "0"
+
+    setTimeout(() => {
+
+        if(carImages[key]){
+            image.src = carImages[key]
+        }
+
+        image.style.opacity = "1"
+
+    }, 150)
+}
 
 // Init model dropdown
 populateModels()
@@ -139,8 +216,15 @@ document.getElementById("year").addEventListener("input", updatePrediction)
 document.getElementById("engine").addEventListener("input", updatePrediction)
 document.getElementById("mileage").addEventListener("input", updatePrediction)
 document.getElementById("ownerCount").addEventListener("input", updatePrediction)
-document.getElementById("brand").addEventListener("change", () => { populateModels(); updatePrediction() })
-document.getElementById("model").addEventListener("change", updatePrediction)
+document.getElementById("brand").addEventListener("change", () => {
+    populateModels()
+    updateCarImage()
+    updatePrediction()
+})
+document.getElementById("model").addEventListener("change", () => {
+    updatePrediction()
+    updateCarImage()
+})
 document.getElementById("fuelType").addEventListener("change", updatePrediction)
 document.getElementById("transmission").addEventListener("change", updatePrediction)
 
@@ -185,7 +269,14 @@ async function updatePrediction() {
         document.getElementById("result").innerHTML = "Server Error"
     }
 }
+updateCarImage()
+const themeToggle = document.getElementById("themeToggle")
 
+themeToggle.addEventListener("click", () => {
+
+    document.body.classList.toggle("light-mode")
+
+})
 updatePrediction()
 </script>
 

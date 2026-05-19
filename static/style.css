@@ -49,7 +49,60 @@ body{
     font-size:40px;
     animation:bounce 1.5s infinite;
 }
+.theme-switch{
+    position:fixed;
+    top:25px;
+    right:25px;
+    z-index:9999;
+}
 
+#themeToggle{
+    display:none;
+}
+
+.toggle-label{
+    width:100px;
+    height:50px;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    border-radius:50px;
+    position:relative;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 12px;
+    overflow:hidden;
+    transition:0.4s ease;
+    box-shadow:0 5px 20px rgba(0,0,0,0.35);
+}
+
+.sun,
+.moon{
+    font-size:20px;
+    z-index:1;
+    pointer-events:none;
+}
+
+.toggle-ball{
+    position:absolute;
+    width:42px;
+    height:42px;
+    background:white;
+    border-radius:50%;
+    top:4px;
+    left:4px;
+    z-index:2;
+    transition:transform 0.4s ease;
+    box-shadow:0 3px 10px rgba(0,0,0,0.25);
+}
+
+#themeToggle:checked + .toggle-label{
+    background:linear-gradient(135deg,#38bdf8,#0ea5e9);
+}
+
+#themeToggle:checked + .toggle-label .toggle-ball{
+    transform:translateX(50px);
+}
 @keyframes bounce{
 
     0%{
@@ -89,6 +142,21 @@ body{
     font-size:35px;
 }
 
+.car-preview{
+    width:100%;
+    height:220px;
+    overflow:hidden;
+    border-radius:20px;
+    margin-bottom:30px;
+}
+
+.car-preview img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:opacity 0.3s ease;
+}
+
 .input-group{
     margin-bottom:30px;
 }
@@ -100,7 +168,7 @@ label{
     font-weight:500;
 }
 
-input[type=\"range\"]{
+input[type="range"]{
     width:100%;
     cursor:pointer;
 }
@@ -149,4 +217,51 @@ select{
     .glass-card{
         width:100%;
     }
+} 
+
+.light-mode{
+    background:#f8fafc;
+    color:#111827;
+}
+
+.light-mode .hero{
+    filter:brightness(1.1);
+}
+
+.light-mode .overlay{
+    background:rgba(255,255,255,0.45);
+}
+
+.light-mode .hero-content h1,
+.light-mode .hero-content p,
+.light-mode .glass-card h2,
+.light-mode label,
+.light-mode .price-box h3{
+    color:#111827;
+}
+
+.light-mode .glass-card{
+    background:rgba(255,255,255,0.9);
+    border:1px solid rgba(0,0,0,0.1);
+}
+
+.light-mode select{
+    background:#e2e8f0;
+    color:#111827;
+}
+
+.light-mode .price-box{
+    background:#e2e8f0;
+}
+
+.light-mode #result{
+    color:#16a34a;
+}
+
+.light-mode .value{
+    color:#2563eb;
+}
+
+.light-mode input[type="range"]{
+    accent-color:#2563eb;
 }
